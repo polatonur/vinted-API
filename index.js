@@ -9,7 +9,7 @@ require("dotenv").config();
 
 const app = express();
 app.use(formidableMiddleware());
-app.use(corse());
+app.use(cors());
 
 mongoose.connect(process.env.MONGODB_URI, {
   useUnifiedTopology: true,
