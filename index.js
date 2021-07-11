@@ -4,10 +4,12 @@ const mongoose = require("mongoose");
 const SHA256 = require("crypto-js/sha256");
 const encBase64 = require("crypto-js/enc-base64");
 const uid2 = require("uid2");
+const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
 app.use(formidableMiddleware());
+app.use(corse());
 
 mongoose.connect(process.env.MONGODB_URI, {
   useUnifiedTopology: true,
