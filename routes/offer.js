@@ -15,7 +15,7 @@ const isAuthenticated = require("../middleware/isAuthenticated");
 router.get("/offers", async (req, res) => {
   try {
     let skip = 0;
-    let offerPerPage = 5;
+    let offerPerPage = 10;
     let query = {};
     let sort = {};
     let result = await Offer.find().populate("owner");
@@ -81,6 +81,7 @@ router.get("/offers", async (req, res) => {
           .populate("owner.account");
         let totalOffer = await Offer.find(query);
         let count = totalOffer.length;
+        console.log(result);
 
         res.status(200).json({
           count: count,
@@ -91,7 +92,14 @@ router.get("/offers", async (req, res) => {
           .select("product_name product_price")
           .skip(skip)
           .limit(offerPerPage);
-        res.status(200).json(result);
+        let totalOffer = await Offer.find(query);
+        let count = totalOffer.length;
+
+        res.status(200).json({
+          count: count,
+          offers: result,
+        });
+        console.log(result);
       }
     }
   } catch (error) {
