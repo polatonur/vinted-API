@@ -78,7 +78,10 @@ router.get("/offers", async (req, res) => {
           .skip(skip)
           .limit(offerPerPage)
           .sort(sort)
-          .populate("owner.account");
+          .populate({
+            path: "owner",
+            select: "account.username account.phone account.avatar",
+          });
         let totalOffer = await Offer.find(query);
         let count = totalOffer.length;
         console.log(result);
@@ -89,9 +92,12 @@ router.get("/offers", async (req, res) => {
         });
       } else {
         result = await Offer.find(query)
-          .select("product_name product_price")
           .skip(skip)
-          .limit(offerPerPage);
+          .limit(offerPerPage)
+          .populate({
+            path: "owner",
+            select: "account.username account.phone account.avatar",
+          });
         let totalOffer = await Offer.find(query);
         let count = totalOffer.length;
 
