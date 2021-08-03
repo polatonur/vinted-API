@@ -50,5 +50,5 @@ app.all("*", (req, res) => {
     message: "Ooops!, page not found",
   });
 });
-// process.env.PORT ||
-app.listen(3001, () => console.log("Server is running..."));
+
+app.listen(process.env.PORT || 3001, () => console.log("Server is running..."));
