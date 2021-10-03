@@ -17,6 +17,7 @@ router.get("/offers", async (req, res) => {
   try {
     let skip = 0;
     let offerPerPage = Number(req.query.limit);
+    console.log("typeof limit", offerPerPage);
     let query = {};
     let sort = {};
     let result = await Offer.find().populate("owner");
