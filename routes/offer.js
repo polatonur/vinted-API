@@ -76,9 +76,10 @@ router.get("/offers", async (req, res) => {
             message: "Sorting  error, you must enter price-desc or price-asc ",
           });
         }
+        console.log("type", typeof Number(req.query.limit));
         result = await Offer.find(query)
           .skip(skip)
-          .limit(offerPerPage)
+          .limit(Number(req.query.limit))
           .sort(sort)
           .populate({
             path: "owner",
