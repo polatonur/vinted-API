@@ -13,9 +13,10 @@ const Offer = require("../models/Offer");
 const isAuthenticated = require("../middleware/isAuthenticated");
 
 router.get("/offers", async (req, res) => {
+  console.log("limit", req.query.limit);
   try {
     let skip = 0;
-    let offerPerPage = 10;
+    let offerPerPage = req.query.limit;
     let query = {};
     let sort = {};
     let result = await Offer.find().populate("owner");
