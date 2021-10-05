@@ -8,13 +8,14 @@ const stripe = require("stripe")(process.env.PRIVATE_KEY);
 router.post("/payment", async (req, res) => {
   console.log("ok");
   try {
-    let { status } = await stripe.charges.create({
+    const paymentIntent = await stripe.paymentIntents.create({
       amount: req.fields.amount * 100,
       currency: "eur",
       description: `Paiement vinted pour : ${req.fields.title}`,
-      source: req.fields.token,
     });
-    res.json({ status });
+    res.json({
+      clientSecret: paymentIntent.client_secret,
+    });
   } catch (error) {
     console.log(error.message);
     res.status(400).json({ error: error.message });
