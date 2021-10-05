@@ -13,7 +13,7 @@ router.post("/payment", async (req, res) => {
       currency: "eur",
       description: `Paiement vinted pour : ${req.fields.title}`,
     });
-    res.json({
+    res.status(200).json({
       clientSecret: paymentIntent.client_secret,
     });
   } catch (error) {
