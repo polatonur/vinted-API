@@ -8,7 +8,7 @@ const User = mongoose.model("User", {
       type: String,
     },
     phone: String,
-    avatar: mongoose.Schema.Types.Mixed, // nous verrons plus tard comment uploader une image
+    avatar: mongoose.Schema.Types.Mixed,
   },
   token: String,
   hash: String,

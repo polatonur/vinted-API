@@ -13,7 +13,6 @@ const Offer = require("../models/Offer");
 const isAuthenticated = require("../middleware/isAuthenticated");
 
 router.get("/offers", async (req, res) => {
-  console.log("limit", req.query.limit);
   try {
     let skip = 0;
     let offerPerPage = Number(req.query.limit);
@@ -31,8 +30,6 @@ router.get("/offers", async (req, res) => {
       req.query.page &&
       (isNaN(req.query.page) || Number(req.query.page) <= 0)
     ) {
-      console.log(typeof req.query.page);
-      console.log(Number(req.query.page));
       res.status(400).json({
         message: "You must enter a positif number",
       });
@@ -66,7 +63,6 @@ router.get("/offers", async (req, res) => {
       }
 
       if (req.query.sort) {
-        console.log("helllo");
         if (req.query.sort === "price-desc") {
           sort.product_price = -1;
         } else if (req.query.sort === "price-asc") {
@@ -125,14 +121,12 @@ router.get("/offer/:id", async (req, res) => {
     });
     res.json(offer);
   } catch (error) {
-    console.log(error.message);
     res.status(400).json({ message: error.message });
   }
 });
 router.post("/offer/publish", isAuthenticated, async (req, res) => {
   try {
     const keys = Object.keys(req.fields);
-    // console.log(keys);
     const details = [
       {
         ETAT: req.fields.condition,
