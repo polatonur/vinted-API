@@ -9,38 +9,48 @@ const Offer = require("../models/Offer");
 
 router.post("/user/signup", async (req, res) => {
   try {
-    if (await User.findOne({ email: req.fields.email })) {
-      res.status(409).json({
-        message: "This email has already has an account.",
+    if (!req.fields.email) {
+      res.status(400).json({
+        message: "You have to enter an email",
       });
-    }
-    if (!req.fields.username) {
+    } else if (!req.fields.username) {
       res.status(400).json({
         message: "You have to enter a username",
       });
-    }
-    const salt = uid2(16);
-    const password = req.fields.password;
-    const hash = SHA256(password + salt).toString(encBase64);
-    const token = uid2(16);
+    } else if (!req.fields.password) {
+      res.status(400).json({
+        message: "You have to enter a password",
+      });
+    } else {
+      if (await User.findOne({ email: req.fields.email })) {
+        res.status(409).json({
+          message: "This email has already has an account.",
+        });
+      } else {
+        const salt = uid2(16);
+        const password = req.fields.password;
+        const hash = SHA256(password + salt).toString(encBase64);
+        const token = uid2(16);
 
-    const newUser = new User({
-      email: req.fields.email,
-      account: {
-        username: req.fields.username,
-        phone: req.fields.phone,
-        avatar: req.fields.avatar,
-      },
-      token: token,
-      hash: hash,
-      salt: salt,
-    });
-    await newUser.save();
-    res.status(200).json({
-      _id: newUser.id,
-      token: newUser.token,
-      account: newUser.account,
-    });
+        const newUser = new User({
+          email: req.fields.email,
+          account: {
+            username: req.fields.username,
+            phone: req.fields.phone,
+            avatar: req.fields.avatar,
+          },
+          token: token,
+          hash: hash,
+          salt: salt,
+        });
+        await newUser.save();
+        res.status(200).json({
+          _id: newUser.id,
+          token: newUser.token,
+          account: newUser.account,
+        });
+      }
+    }
   } catch (error) {
     res.status(400).json({
       message: error.message,
