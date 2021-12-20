@@ -119,7 +119,13 @@ router.get("/offer/:id", async (req, res) => {
       path: "owner",
       select: "account.username account.phone account.avatar",
     });
-    res.json(offer);
+    if (offer) {
+      res.status(200).json(offer);
+    } else {
+      res.status(404).json({
+        message: "Offer not found",
+      });
+    }
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -269,26 +275,31 @@ router.delete("/offer/delete/:id", isAuthenticated, async (req, res) => {
   try {
     const publish = await Offer.findById(req.params.id);
     if (publish) {
+      console.log("delete offer");
       const id = publish.id;
 
-      console.log(publish);
-      //first delete image in the folder with destroy
-      const publicIdOfImage = publish.product_image.public_id;
-      //await cloudinary.uploader.destroy(publicIdOfImage);
-      await cloudinary.api.delete_resources_by_prefix(publicIdOfImage);
+      const public_id = publish.product_image.public_id;
 
-      //secondly delete folder and delete offer from DB
-      await cloudinary.api.delete_folder("/vinted/offers/" + id);
+      // if image is no_image no need to delete photo
+      if (public_id !== "vinted/no_image/vbvgedyfnussevpcwhod") {
+        //first delete image in the folder with destroy
+        await cloudinary.api.delete_resources_by_prefix(publicIdOfImage);
+
+        //secondly delete folder and delete offer from DB
+        await cloudinary.api.delete_folder("/vinted/offers/" + id);
+      }
+
       await Offer.findByIdAndDelete(id);
       res.status(200).json({
         message: "The publish was succesfully deleted",
       });
     } else {
-      res.status(400).json({
+      res.status(404).json({
         message: "Publish not found, wrong id or publish was already deleted",
       });
     }
   } catch (error) {
+    console.log(error);
     res.status(400).json({
       message: error.message,
     });

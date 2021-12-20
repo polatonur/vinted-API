@@ -7,6 +7,7 @@ const utils = require("../utils");
 let mongoServer;
 let token = 0;
 let userId = "";
+let offerId = "";
 
 describe("offer tests", () => {
   beforeAll(async () => {
@@ -62,11 +63,39 @@ describe("offer tests", () => {
         size: "XL",
       })
       .set("authorization", "Bearer " + token);
-    console.log(response.body);
+    offerId = response.body["-id"];
     expect(response.statusCode).toBe(200);
   });
-});
 
-test("offer test", () => {
-  expect(true).toBe(true);
+  test("should get details of  a publication", async () => {
+    const response = await request(app)
+      .get(`/offer/${offerId}`)
+      .set("Accept", "application/json");
+    expect(response.statusCode).toBe(200);
+  });
+
+  test("should update offers name", async () => {
+    const res = await request(app)
+      .put(`/offer/update/${offerId}`)
+      .send({ tittle: "test jest" })
+      .set("authorization", `Bearer ${token}`);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toMatchObject({
+      message: "The offer was succesfully updated",
+    });
+  });
+
+  test("should delete an offer", async () => {
+    const res = await request(app)
+      .delete(`/offer/delete/${offerId}`)
+      .set("authorization", `Bearer ${token}`);
+
+    console.log(res.body);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual({
+      message: "The publish was succesfully deleted",
+    });
+  });
 });

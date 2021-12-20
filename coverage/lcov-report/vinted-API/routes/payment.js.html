@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">58.33% </span>
+                <span class="strong">84.61% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>7/12</span>
+                <span class='fraction'>11/13</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">58.33% </span>
+                <span class="strong">84.61% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>7/12</span>
+                <span class='fraction'>11/13</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -86,45 +86,48 @@
 <a name='L21'></a><a href='#L21'>21</a>
 <a name='L22'></a><a href='#L22'>22</a>
 <a name='L23'></a><a href='#L23'>23</a>
-<a name='L24'></a><a href='#L24'>24</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const express = require("express");
 const router = express.Router();
 const formidableMiddleware = require("express-formidable");
+const utils = require("../utils");
 router.use(formidableMiddleware());
-const stripe = require("stripe")(process.env.PRIVATE_KEY);
 &nbsp;
-router.post("/payment", <span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {
-<span class="cstat-no" title="statement not covered" >  try {</span>
-    const paymentIntent = <span class="cstat-no" title="statement not covered" >await stripe.paymentIntents.create({</span>
-      amount: req.fields.amount * 100,
-      currency: "eur",
-      description: `Paiement vinted pour : ${req.fields.title}`,
-    });
-<span class="cstat-no" title="statement not covered" >    res.status(200).json({</span>
-      clientSecret: paymentIntent.client_secret,
-    });
+router.post("/payment", async (req, res) =&gt; {
+  try {
+    const paymentIntent = await utils.payment(
+      req.fields.amount,
+      req.fields.title
+    );
+    console.log(paymentIntent);
+    // res.status(200).json({
+    //   clientSecret: paymentIntent.client_secret,
+    // });
+    res.status(200).json({ message: "ok" });
   } catch (error) {
 <span class="cstat-no" title="statement not covered" >    console.log(error.message);</span>
 <span class="cstat-no" title="statement not covered" >    res.status(400).json({ error: error.message });</span>
@@ -139,7 +142,7 @@ module.exports = router;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener">istanbul</a>
-                at Mon Dec 20 2021 12:27:56 GMT+0100 (Central European Standard Time)
+                at Mon Dec 20 2021 14:58:15 GMT+0100 (Central European Standard Time)
             </div>
         </div>
         <script src="../../prettify.js"></script>
