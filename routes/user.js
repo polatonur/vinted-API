@@ -60,26 +60,32 @@ router.post("/user/signup", async (req, res) => {
 
 router.post("/user/login", async (req, res) => {
   try {
-    if (await User.findOne({ email: req.fields.email })) {
-      const user = await User.findOne({ email: req.fields.email });
-      const hashToCompare = SHA256(req.fields.password + user.salt).toString(
-        encBase64
-      );
-      if (user.hash === hashToCompare) {
-        res.status(200).json({
-          _id: user.id,
-          token: user.token,
-          account: user.account,
-        });
+    if (!req.fields.email || !req.fields.password) {
+      res.status(400).json({
+        message: "Please fill required fields(email,password)",
+      });
+    } else {
+      if (await User.findOne({ email: req.fields.email })) {
+        const user = await User.findOne({ email: req.fields.email });
+        const hashToCompare = SHA256(req.fields.password + user.salt).toString(
+          encBase64
+        );
+        if (user.hash === hashToCompare) {
+          res.status(200).json({
+            _id: user.id,
+            token: user.token,
+            account: user.account,
+          });
+        } else {
+          res.status(401).json({
+            message: "Unautorized user",
+          });
+        }
       } else {
         res.status(401).json({
           message: "Unautorized user",
         });
       }
-    } else {
-      res.status(401).json({
-        message: "Unautorized user",
-      });
     }
   } catch (error) {
     res.status(400).json({

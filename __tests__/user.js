@@ -69,4 +69,53 @@ describe("user tests", () => {
     expect(response.statusCode).toBe(400);
     expect(response.body).toEqual({ message: "You have to enter a username" });
   });
+
+  test("should create and  login with user", async () => {
+    const response = await request(app)
+      .post("/user/signup")
+      .send({ email: "my email", username: "Onur", password: "qwerty" })
+      .set("Accept", "application/json");
+    const response1 = await request(app)
+      .post("/user/login")
+      .send({ email: "my email", password: "qwerty" })
+      .set("Accept", "application/json");
+    expect(response1.statusCode).toBe(200);
+  });
+
+  test("should return an error ", async () => {
+    const response = await request(app)
+      .post("/user/login")
+      .send()
+      .set("Accept", "application/json");
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body).toEqual({
+      message: "Please fill required fields(email,password)",
+    });
+  });
+
+  test("should return unauthorized user error", async () => {
+    const response = await request(app)
+      .post("/user/login")
+      .send({ email: "onur@gmail.com", password: "qqwer" })
+      .set("Acccept", "application/json");
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toEqual({
+      message: "Unautorized user",
+    });
+  });
+  test("should create user and but return unauthorized user error because of a wrong password", async () => {
+    const response = await request(app)
+      .post("/user/signup")
+      .send({ email: "my email", username: "Onur", password: "qwerty" })
+      .set("Accept", "application/json");
+    const response1 = await request(app)
+      .post("/user/login")
+      .send({ email: "my email", password: "qwertyw" })
+      .set("Accept", "application/json");
+    expect(response1.statusCode).toBe(401);
+    expect(response1.body).toEqual({
+      message: "Unautorized user",
+    });
+  });
 });
