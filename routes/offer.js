@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const cloudinary = require("cloudinary").v2;
+const utils = require("../utils");
+const { defaultPhoto } = require("../defaultValues");
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -150,11 +152,23 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
       product_details: details,
       owner: req.user.id,
     });
-    const pictureToUpload = req.files.picture.path;
-    const photo = await cloudinary.uploader.upload(pictureToUpload, {
-      folder: "/vinted/offers/" + newAd.id,
-    });
-    newAd.product_image = photo;
+
+    if (req.files.picture) {
+      const pictureToUpload = req.files.picture.path;
+      console.log("path==>", pictureToUpload);
+      const options = {
+        folder: "/vinted/offers/" + newAd.id,
+      };
+
+      // const photo = await cloudinary.uploader.upload(pictureToUpload, {
+      //   folder: "/vinted/offers/" + newAd.id,
+      // });
+      // const photo = await utils.uploadPhoto(pictureToUpload, options);
+      // newAd.product_image = photo;
+    } else {
+      newAd.product_image = defaultPhoto;
+    }
+
     await newAd.save();
 
     const ad = await Offer.findOne({ product_name: req.fields.title }).populate(
@@ -172,6 +186,21 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
       },
 
       product_image: ad.product_image,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: error.message,
+    });
+  }
+});
+
+router.post("/offer/default", async (req, res) => {
+  const path = req.files.picture.path;
+  const options = { folder: "/vinted/no_image" };
+  try {
+    const photo = await utils.uploadPhoto(path, options);
+    res.status(200).json({
+      photo,
     });
   } catch (error) {
     res.status(400).json({

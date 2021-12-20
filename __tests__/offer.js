@@ -2,9 +2,11 @@ const mongoose = require("mongoose");
 const app = require("../app.js");
 const request = require("supertest");
 const { MongoMemoryServer } = require("mongodb-memory-server");
+const utils = require("../utils");
 
 let mongoServer;
 let token = 0;
+let userId = "";
 
 describe("offer tests", () => {
   beforeAll(async () => {
@@ -24,6 +26,7 @@ describe("offer tests", () => {
       .send({ username: "onur", password: "qwerty", email: "onur@gmail.com" })
       .set("Accept", "application/json");
     token = response.body.token;
+    userId = response.body._id;
     expect(response.statusCode).toBe(200);
     expect(response.body).toMatchObject({
       account: { username: "onur" },
@@ -49,10 +52,18 @@ describe("offer tests", () => {
   test("should create a new publish", async () => {
     const response = await request(app)
       .post("/offer/publish")
-      .send()
-      .set("Accept", "application/json");
-
-    expect(response.statusCode).toBe(401);
+      .send({
+        title: "test",
+        city: "paris",
+        condition: "comme neuf",
+        price: 10,
+        brand: "ZARA",
+        color: "red",
+        size: "XL",
+      })
+      .set("authorization", "Bearer " + token);
+    console.log(response.body);
+    expect(response.statusCode).toBe(200);
   });
 });
 
