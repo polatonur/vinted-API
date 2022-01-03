@@ -11,10 +11,9 @@ router.post("/payment", async (req, res) => {
       req.fields.title
     );
     console.log(paymentIntent);
-    // res.status(200).json({
-    //   clientSecret: paymentIntent.client_secret,
-    // });
-    res.status(200).json({ message: "ok" });
+    res.status(200).json({
+      clientSecret: paymentIntent.client_secret,
+    });
   } catch (error) {
     console.log(error.message);
     res.status(400).json({ error: error.message });
